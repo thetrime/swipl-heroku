@@ -1,25 +1,21 @@
 #!/bin/bash
 
-##
-# usage: bin/compile <build-dir> <cache-dir>
+if [ -z "$1" ]; then
+    SWI_BRANCH="master";
+else
+    SWI_BRANCH="V$1"
+    SWI_VERSION="$1"
+fi
+
 
 set -e
 BIN_DIR=$(cd $(dirname $0); pwd) # absolute path
 bpdir=$(cd $(dirname $(dirname $0)); pwd)
-mkdir -p "$1" "$2"
-build=$(cd "$1/" && pwd)
+mkdir -p build cache
+build=$(cd "build/" && pwd)
 test -z ${build} && exit
-cache=$(cd "$2/" && pwd)
+cache=$(cd "cache/" && pwd)
 test -z ${cache} && exit
-if [ -f ${build}/.preferred_swi_version ]; then
-    SWI_VERSION=$(cat ${build}/.preferred_swi_version)
-    SWI_BRANCH="V${SWI_VERSION}"
-else
-    SWI_VERSION="7.1.23"
-    SWI_BRANCH="V7.1.23"
-fi
-ID=${SWI_BRANCH}
-tarball=${ID}.tgz
 PROFILE=${HOME}/.profile.d
 
 # If we have a copy of the build environment already, just use that!
@@ -118,22 +114,25 @@ echo "------> Checking for precompiled Prolog build"
     tar -xzf ${cache}/libarchive.tgz
 
     # Finally: Prolog
-    echo "-----> Checking for SWI Prolog version ${ID}"
+    echo "-----> Building prolog"
     (
         set -e
         # We MUST do this or git will go bezerk when we try to do anything to the checked-out SWI repository
         unset GIT_DIR
-        # Already got a servicable build of SWI-Prolog?
-        test -f ${cache}/swipl-${ID}.tgz && exit
-        # Otherwise, we must compile one.
-        
+
         # Build Prolog in ${build}/swipl-build, and install to /app/.swipl then compress
         # /app/.swipl to ${cache}/swipl-${ID}.tgz
         rm -rf ${build}/swipl-build
         mkdir -p ${build}/swipl-build
         cd ${build}/swipl-build
         echo "------> Fetching SWI Prolog from git"
-        git clone --branch ${ID} https://github.com/SWI-Prolog/swipl-devel.git > /dev/null 2>&1
+        if [ $(SWI_BRANCH) == "master"] ; then
+            git clone https://github.com/SWI-Prolog/swipl-devel.git > /dev/null 2>&1
+            ID=$(cat VERSION)
+        else
+            git clone --branch ${ID} https://github.com/SWI-Prolog/swipl-devel.git > /dev/null 2>&1
+            ID=${SWI_VERSION}
+        fi
         cd swipl-devel
         echo "------> Switching to version ${ID}"
         git checkout ${ID} > /dev/null 2>&1
@@ -166,9 +165,11 @@ echo "------> Checking for precompiled Prolog build"
         echo "------> Installed SWI Prolog ${ID}"
     )
 
-    echo "-----> Found SWI Prolog version ${ID} ready for use in ${cache}/swipl-${ID}.tgz. Unpacking..."
     cd /app
     tar -xzf ${cache}/swipl-${ID}.tgz
+    tar -cjf ${BIN_DIR}/env-${ID}.tar.bz2 /app
+
+    echo "Environment is in ${BIN_DIR}/env-${ID}.tar.bz2"
+
 )
 
-echo "swipl is available in ${cache}/swipl-${ID}.tgz"
