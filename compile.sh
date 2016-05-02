@@ -138,8 +138,6 @@ echo "------> Compiling Prolog"
             cd swipl-devel
             ID=${SWI_VERSION}
         fi
-        echo "------> Switching to version ${ID}"
-        git checkout ${ID} > /dev/null 2>&1
         echo "------> Building SWI Prolog ${ID} in ${build}/swipl-build"
         # First apply a very small patch so we can compile on Cedar. This seems to be harmless. Hopefully.
         sed -i -e 's@2.66@2.65@g' src/configure.in
