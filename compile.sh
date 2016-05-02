@@ -157,13 +157,12 @@ echo "------> Compiling Prolog"
         rm -rf ${build}/swipl-build
         rm -rf /app/.swipl
         echo "------> Installed SWI Prolog ${ID}"
+        cd /app
+        tar -xzf ${cache}/swipl-${ID}.tgz
+        tar -cjf ${BIN_DIR}/env-${ID}.tar.bz2 /app
+
+        echo "Environment is in ${BIN_DIR}/env-${ID}.tar.bz2"
+
     )
-
-    cd /app
-    tar -xzf ${cache}/swipl-${ID}.tgz
-    tar -cjf ${BIN_DIR}/env-${ID}.tar.bz2 /app
-
-    echo "Environment is in ${BIN_DIR}/env-${ID}.tar.bz2"
-
 )
 
