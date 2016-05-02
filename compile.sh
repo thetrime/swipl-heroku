@@ -36,9 +36,8 @@ echo "------> Checking for precompiled Prolog build"
         echo "------> Fetching unixODBC"
         mkdir -p ${build}/unixodbc-build
         cd ${build}/unixodbc-build
-        # The ftp.unixodbc.org site no longer resolves for me?
-        curl ftp://mirror.ovh.net/gentoo-distfiles/distfiles/unixODBC-2.3.2.tar.gz -s -o - | tar -zx -f -
-        cd unixODBC-2.3.2
+        curl ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-2.3.4.tar.gz -s -o - | tar -zx -f -
+        cd unixODBC-2.3.4
         echo "------> Compiling unixODBC"
         ./configure --prefix=/app/.odbc > /dev/null 2>&1
         make > /dev/null 2>&1
