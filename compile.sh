@@ -5,7 +5,7 @@
 
 set -e
 BIN_DIR=$(cd $(dirname $0); pwd) # absolute path
-OPT_DIR=$(cd "$BIN_DIR/../opt"; pwd)
+OPT_DIR=$(cd "$BIN_DIR/opt"; pwd)
 bpdir=$(cd $(dirname $(dirname $0)); pwd)
 mkdir -p "$1" "$2"
 build=$(cd "$1/" && pwd)
@@ -26,13 +26,6 @@ PROFILE=${HOME}/.profile.d
 # If we have a copy of the build environment already, just use that!
 echo "------> Checking for precompiled Prolog build"
 (
-    if [ -f ${OPT_DIR}/env-${SWI_VERSION}.tar.bz2 ]; then
-        echo "------> Found precompiled Prolog build!"
-        cd /app
-        tar -xjf ${OPT_DIR}/env-${SWI_VERSION}.tar.bz2
-        exit
-    fi
-
     # Testing: Recompile all
     # rm ${cache}/*.tgz
     
@@ -179,36 +172,5 @@ echo "------> Checking for precompiled Prolog build"
     cd /app
     tar -xzf ${cache}/swipl-${ID}.tgz
 )
-PATH=${cache}/.swipl/bin:$PATH
-export PATH
 
-echo "-----> Compiling slug"
-cd $build
-swipl="/app/.swipl/bin/swipl"
-arch=$(${swipl} --arch)
-cp -r /app/.swipl ${build}/
-cp -r /app/.odbc ${build}/
-cp -r /app/.psqlodbc ${build}/
-cp -r /app/.gmp ${build}/
-# Configure unixodbc
-echo "-----> Configuring unixodbc for PostgreSQL support"
-cat << 'EOF' > ${build}/.odbc/etc/odbcinst.ini
-[ODBC Drivers]
-PostgreSQL = Installed
-
-[PostgreSQL]
-Driver = /app/.psqlodbc/lib/psqlodbcw.so
-Debug = 0
-
-EOF
-
-PATH=$PATH:/app/.swipl/bin
-cp ${OPT_DIR}/heroku.pl .
-SOURCES="heroku.pl $(cat ${build}/swipl.manifest)"
-if [[ "z${SOURCES}" == "z" ]]; then
-    echo "------> Compiling all .pl files in root directory"
-    SOURCES="*.pl"
-fi
-
-/app/.swipl/bin/swipl -q -o ${build}/swipl-heroku -g heroku -t prolog --stand_alone=true -c ${SOURCES}
-echo "-----> Build succeeded"
+echo "swipl is available in ${cache}/swipl-${ID}.tgz"
