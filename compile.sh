@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# To build your desired environment:
+# # heroku run bash
+# # ./compile.sh 7.1.32
+
 if [ -z "$1" ]; then
     SWI_BRANCH="master";
 else
@@ -19,12 +23,11 @@ test -z ${cache} && exit
 PROFILE=${HOME}/.profile.d
 
 # If we have a copy of the build environment already, just use that!
-echo "------> Checking for precompiled Prolog build"
+echo "------> Compiling Prolog"
 (
     # Testing: Recompile all
     # rm ${cache}/*.tgz
-    
-    # Ok, lets hope this takes < 15 minutes!
+
     # First though, do we have unixodbc?
     echo "------> Checking for unixODBC"
     (
@@ -126,7 +129,7 @@ echo "------> Checking for precompiled Prolog build"
         mkdir -p ${build}/swipl-build
         cd ${build}/swipl-build
         echo "------> Fetching SWI Prolog from git"
-        if [ $(SWI_BRANCH) == "master"] ; then
+        if [ ${SWI_BRANCH} == "master"] ; then
             git clone https://github.com/SWI-Prolog/swipl-devel.git > /dev/null 2>&1
             ID=$(cat VERSION)
         else
