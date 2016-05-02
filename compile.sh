@@ -151,14 +151,6 @@ echo "------> Compiling Prolog"
         make > /dev/null 2>&1
         echo "------> Installing SWI Prolog ${ID}"
         make install > /dev/null 2>&1
-        echo "------> Preparing CQL"
-        (
-            test -f packages/cql && exit
-            cd packages
-            git clone https://github.com/SWI-Prolog/packages-cql.git > /dev/null 2>&1
-            cd packages-cql
-            make install > /dev/null 2>&1
-        )
         cd /app
         tar -czf ${cache}/swipl-${ID}.tgz .swipl
         # Now clean up
