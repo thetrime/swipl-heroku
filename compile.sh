@@ -129,6 +129,7 @@ echo "------> Compiling Prolog"
         mkdir -p ${build}/swipl-build
         cd ${build}/swipl-build
         echo "------> Fetching SWI Prolog from git"
+        cd swipl-devel
         if [ ${SWI_BRANCH} == "master" ] ; then
             git clone https://github.com/SWI-Prolog/swipl-devel.git > /dev/null 2>&1
             ID=$(cat VERSION)
@@ -136,7 +137,6 @@ echo "------> Compiling Prolog"
             git clone --branch ${ID} https://github.com/SWI-Prolog/swipl-devel.git > /dev/null 2>&1
             ID=${SWI_VERSION}
         fi
-        cd swipl-devel
         echo "------> Switching to version ${ID}"
         git checkout ${ID} > /dev/null 2>&1
         echo "------> Building SWI Prolog ${ID} in ${build}/swipl-build"
