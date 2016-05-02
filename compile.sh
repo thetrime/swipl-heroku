@@ -5,7 +5,6 @@
 
 set -e
 BIN_DIR=$(cd $(dirname $0); pwd) # absolute path
-OPT_DIR=$(cd "$BIN_DIR/opt"; pwd)
 bpdir=$(cd $(dirname $(dirname $0)); pwd)
 mkdir -p "$1" "$2"
 build=$(cd "$1/" && pwd)
